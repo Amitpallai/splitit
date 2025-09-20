@@ -6,8 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
 import { useAuth } from "../context/AuthContext"; // Adjust path if needed
-import { useNavigate } from "react-router-dom";
-import { toast, Toaster } from "sonner"; // ✅ Sonner
+import { useNavigate, Link } from "react-router-dom";
+import { toast, Toaster } from "sonner";
 
 const RegisterPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -29,33 +29,32 @@ const RegisterPage: React.FC = () => {
 
     try {
       await signup(name, email, password);
-
-      toast.success("Account created successfully! Welcome!");
+      toast.success("Account created successfully! 🎉");
       navigate("/dashboard");
     } catch (err: any) {
-      // Check if backend returned a 409 Conflict
       if (err.message.includes("409")) {
         toast.error("This email is already registered. Please log in.");
       } else {
-        toast.error(err.message || "Signup failed");
+        toast.error(err.message || "Signup failed ❌");
       }
     }
   };
 
   return (
-    <div className="min-h-screen flex bg-black text-white">
-      {/* Sonner Toaster */}
-      <Toaster position="top-right" />
+    <div className="min-h-screen flex flex-col md:flex-row bg-black text-white">
+      <Toaster position="top-right" richColors />
 
       {/* Left Panel */}
       <div className="hidden md:flex w-1/2 flex-col items-center justify-center p-10 bg-gradient-to-b from-purple-600 to-black">
         <div className="max-w-md text-center space-y-6">
-          <h1 className="text-2xl font-bold">SPLITit</h1>
-          <h2 className="text-3xl font-extrabold">Get Started with Us</h2>
-          <p className="text-gray-300">Complete these easy steps to register your account.</p>
+          <h1 className="text-3xl font-extrabold">SPLIT<span className="text-purple-500">it</span></h1>
+          <h2 className="text-4xl font-extrabold">Get Started with Us</h2>
+          <p className="text-gray-300">
+            Complete these easy steps to register your account.
+          </p>
 
           {/* Steps */}
-          <div className="space-y-3 mt-6">
+          <div className="space-y-3 mt-6 text-left">
             <div className="flex items-center space-x-3 bg-white text-black rounded-xl px-4 py-2">
               <span className="font-bold">1</span>
               <span>Sign up your account</span>
@@ -73,16 +72,20 @@ const RegisterPage: React.FC = () => {
       </div>
 
       {/* Right Panel */}
-      <div className="w-full md:w-1/2 flex flex-col justify-center px-8 md:px-16">
+      <div className="w-full md:w-1/2 flex flex-col justify-center px-6 sm:px-10 md:px-16 py-10">
         <div className="max-w-md w-full mx-auto space-y-6">
-          <h2 className="text-2xl font-bold">Sign Up Account</h2>
-          <p className="text-gray-400 text-sm">Enter your personal data to create your account.</p>
+          <h2 className="text-2xl md:text-3xl font-bold text-center md:text-left">
+            Create Your Account
+          </h2>
+          <p className="text-gray-400 text-sm text-center md:text-left">
+            Enter your personal details to get started.
+          </p>
 
           {/* Form */}
           <form className="space-y-4" onSubmit={handleSubmit} noValidate>
             {/* Name Fields */}
-            <div className="flex space-x-4">
-              <div className="w-1/2 flex flex-col gap-2">
+            <div className="flex flex-row sm:space-x-4 space-y-2 sm:space-y-0 gap-2">
+              <div className="w-full sm:w-1/2 flex flex-col gap-2">
                 <Label htmlFor="firstName">First Name</Label>
                 <Input
                   id="firstName"
@@ -94,7 +97,7 @@ const RegisterPage: React.FC = () => {
                   required
                 />
               </div>
-              <div className="w-1/2 flex flex-col gap-2">
+              <div className="w-full sm:w-1/2 flex flex-col gap-2">
                 <Label htmlFor="lastName">Last Name</Label>
                 <Input
                   id="lastName"
@@ -154,17 +157,18 @@ const RegisterPage: React.FC = () => {
             {/* Submit */}
             <Button
               type="submit"
-              className="w-full bg-white text-black hover:bg-gray-200"
+              className="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium"
             >
               Sign Up
             </Button>
           </form>
 
+          {/* Login Redirect */}
           <p className="text-sm text-gray-400 text-center">
             Already have an account?{" "}
-            <a href="/login" className="text-white hover:underline">
+            <Link to="/login" className="text-purple-400 hover:underline">
               Log in
-            </a>
+            </Link>
           </p>
         </div>
       </div>

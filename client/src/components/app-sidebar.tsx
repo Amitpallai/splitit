@@ -1,138 +1,48 @@
+"use client"
+
 import * as React from "react"
 import {
-  IconCamera,
   IconChartBar,
   IconDashboard,
-  IconDatabase,
-  IconFileAi,
-  IconFileDescription,
-  IconFileWord,
   IconFolder,
   IconInnerShadowTop,
   IconListDetails,
-  IconReport,
   IconUsers,
 } from "@tabler/icons-react"
+import { Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar"
 
-import { NavMain } from "@/components/nav-main"
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from "@/components/ui/sidebar"
-import { SettingsDialog } from "./settings-dialog"
+// Import all dialogs
+import { NotificationDialog } from "./setting/Notification"
+import { AppearanceDialog } from "./setting/Appearance"
+import { ChangePasswordDialog } from "./setting/ChangePassword"
+import { LogoutDialog } from "./setting/Logout"
 
-const data = {
-   
-  navMain: [
-    {
-      title: "Dashboard",
-      url: "#",
-      icon: IconDashboard,
-    },
-    {
-      title: "Lifecycle",
-      url: "#",
-      icon: IconListDetails,
-    },
-    {
-      title: "Analytics",
-      url: "#",
-      icon: IconChartBar,
-    },
-    {
-      title: "Projects",
-      url: "#",
-      icon: IconFolder,
-    },
-    {
-      title: "Team",
-      url: "#",
-      icon: IconUsers,
-    },
-  ],
-  navClouds: [
-    {
-      title: "Capture",
-      icon: IconCamera,
-      isActive: true,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Proposal",
-      icon: IconFileDescription,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Prompts",
-      icon: IconFileAi,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-  ],
-   
-  documents: [
-    {
-      name: "Data Library",
-      url: "#",
-      icon: IconDatabase,
-    },
-    {
-      name: "Reports",
-      url: "#",
-      icon: IconReport,
-    },
-    {
-      name: "Word Assistant",
-      url: "#",
-      icon: IconFileWord,
-    },
-  ],
+// Map dialog keys to actual components
+const dialogComponents: Record<string, React.ReactNode> = {
+  Appearance: <AppearanceDialog />,
+  Privacy: <ChangePasswordDialog />,
+  Notifications: <NotificationDialog />,
+  Logout: <LogoutDialog />,
 }
+
+const menuItems = [
+  { title: "Dashboard", icon: IconDashboard },
+  { title: "Profile", icon: IconListDetails },
+  { title: "Appearance", icon: IconChartBar },
+  { title: "Privacy", icon: IconFolder },
+  { title: "Notifications", icon: IconUsers },
+  { title: "Logout", icon: IconUsers },
+]
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="offcanvas" {...props}>
+      {/* Sidebar header */}
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              className="data-[slot=sidebar-menu-button]:!p-1.5"
-            >
-              <a href="#">
+            <SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:!p-1.5">
+              <a href="/" className="flex items-center gap-2">
                 <IconInnerShadowTop className="!size-5" />
                 <span className="text-base font-semibold">SPLITit</span>
               </a>
@@ -141,12 +51,30 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
 
+      {/* Sidebar content */}
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <SettingsDialog/>
-      </SidebarContent>
+        <SidebarMenu>
+          {menuItems.map((item) => {
+            const DialogComponent = dialogComponents[item.title]
 
-       
+            return (
+              <SidebarMenuItem key={item.title}>
+                {DialogComponent ? (
+                  // Render the dialog if exists
+                  <div>{DialogComponent}</div>
+                ) : (
+                  <SidebarMenuButton asChild>
+                    <button className="flex w-full items-center gap-2 text-start p-2">
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </button>
+                  </SidebarMenuButton>
+                )}
+              </SidebarMenuItem>
+            )
+          })}
+        </SidebarMenu>
+      </SidebarContent>
     </Sidebar>
-  );
+  )
 }

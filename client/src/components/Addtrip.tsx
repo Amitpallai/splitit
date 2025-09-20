@@ -1,55 +1,63 @@
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { AddTripDialog } from "./trips/AddTripDialog"// New dialog for adding trips, defined below
-import { AddBillDialog } from "./trips/AddBillDialog"
+"use client";
 
-// Mock data; replace with API fetch (e.g., useEffect with axios.get('/api/trips'))
-const trips = [
-  { id: "trip1", name: "Paris Vacation", description: "Group trip to France", totalExpenses: 1200.00 },
-  { id: "trip2", name: "Weekend Getaway", description: "Local hiking trip", totalExpenses: 300.00 },
-  // Add more...
-]
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { AddTripDialog } from "./trips/AddTripDialog";
+import { TripCard } from "./trips/TripCard";
+import { useTrip } from "@/context/TripContext";
+import PaymentsTable from "./trips/RecentTripExpense";
 
 export function AddTrip() {
-  const [selectedTripId, setSelectedTripId] = useState<string | null>(null)
-  const [isAddBillOpen, setIsAddBillOpen] = useState(false)
-  const [isAddTripOpen, setIsAddTripOpen] = useState(false)
+  const { trips, fetchTrips } = useTrip();
+  const [isAddTripOpen, setIsAddTripOpen] = useState(false);
 
-  const handleTripClick = (tripId: string) => {
-    setSelectedTripId(tripId)
-    setIsAddBillOpen(true)
-  }
-
+  // Fetch trips and expenses on mount
+ 
   return (
     <div className="flex flex-col min-h-screen">
+      {/* Header */}
       <header className="bg-background border-b px-4 py-3 flex items-center justify-between">
         <h1 className="text-lg font-semibold">Split Bill Dashboard</h1>
         <Button onClick={() => setIsAddTripOpen(true)}>Add New Trip</Button>
       </header>
-      <main className="flex-1 p-6 grid gap-6 md:grid-cols-3">
-        {trips.map((trip) => (
-          <Card 
-            key={trip.id} 
-            className="cursor-pointer hover:shadow-md transition-shadow"
-            onClick={() => handleTripClick(trip.id)}
-          >
-            <CardHeader>
-              <CardTitle>{trip.name}</CardTitle>
-              <CardDescription>{trip.description}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-xl font-bold">Total: ${trip.totalExpenses.toFixed(2)}</div>
-            </CardContent>
-          </Card>
-        ))}
-      </main>
-      <AddTripDialog isOpen={isAddTripOpen} onClose={() => setIsAddTripOpen(false)} />
-      <AddBillDialog 
-        isOpen={isAddBillOpen} 
-        onClose={() => setIsAddBillOpen(false)} 
-        tripId={selectedTripId} 
+
+      {/* Add Trip Dialog */}
+      <AddTripDialog
+        isOpen={isAddTripOpen}
+        onClose={() => {
+          setIsAddTripOpen(false);
+          fetchTrips(); // refresh trips
+        }}
       />
+
+      {/* All Trips */}
+      <div className="p-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {trips.length > 0 ? (
+          trips.map((trip) => (
+            <TripCard
+              key={trip._id}
+              id={trip._id}
+              name={trip.tripName}
+              location={trip.location}
+              participants={trip.participants.map(
+                (p: { username?: string; _id?: string } | string) =>
+                  typeof p === "string" ? p : p.username || p._id || ""
+              )}
+              guestParticipants={trip.guestParticipants || []}
+            />
+          ))
+        ) : (
+          <p className="text-gray-500">
+            No trips found. Add a new trip to get started.
+          </p>
+        )}
+      </div>
+
+      {/* Recent Expenses */}
+      <div className="p-6">
+        <h2 className="text-lg font-semibold mb-4">Recent Expenses</h2>
+        <PaymentsTable/>
+      </div>
     </div>
-  )
+  );
 }

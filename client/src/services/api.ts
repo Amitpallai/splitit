@@ -20,8 +20,8 @@ export const login = async (email: string, password: string): Promise<AuthRespon
   return data;
 };
 
-export const signup = async (name: string, email: string, password: string): Promise<AuthResponse> => {
-  const { data } = await apiClient.post<AuthResponse>("/auth/signup", { name, email, password });
+export const signup = async (username: string, email: string, password: string): Promise<AuthResponse> => {
+  const { data } = await apiClient.post<AuthResponse>("/auth/signup", { username, email, password });
   return data;
 };
 

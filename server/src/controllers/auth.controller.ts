@@ -16,33 +16,33 @@ export const signup = async (req: AuthRequest, res: Response, next: NextFunction
       return res.status(400).json({ success: false, message: validation.error.issues[0].message });
     }
 
-    const { name, email, password } = validation.data;
+    const { username, email, password } = validation.data;
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(409).json({ success: false, message: 'User already exists' });
+      return res.status(409).json({ success: false, message: "User already exists" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = await User.create({ name, email, password: hashedPassword });
+    const user = await User.create({ username, email, password: hashedPassword });
 
-    const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '7d' });
+    const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: "7d" });
 
-    // Send token in cookie and JSON
-    res.cookie('token', token, {
+    res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       maxAge: COOKIE_MAX_AGE,
     });
 
     res.status(201).json({
       success: true,
-      user: { name: user.name, email: user.email },
-      token, // frontend can store in localStorage if needed
-      message: 'Signed up successfully',
+      user: { username: user.username, email: user.email },
+      token,
+      message: "Signed up successfully",
     });
+
   } catch (error: any) {
     console.error(error.message);
     res.status(500).json({ success: false, message: error.message });
@@ -75,10 +75,11 @@ export const login = async (req: AuthRequest, res: Response, next: NextFunction)
 
     res.status(200).json({
       success: true,
-      user: { name: user.name, email: user.email },
+      user: { username: user.username, email: user.email },
       token,
-      message: 'Logged in successfully',
+      message: "Logged in successfully",
     });
+
   } catch (error: any) {
     console.error(error.message);
     res.status(500).json({ success: false, message: 'Server error' });

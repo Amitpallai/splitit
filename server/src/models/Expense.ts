@@ -1,11 +1,24 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema, Document } from "mongoose";
 
-const expenseSchema = new mongoose.Schema({
-  trip: { type: mongoose.Schema.Types.ObjectId, ref: 'Trip', required: true },
-  amount: { type: Number, required: true },
-  description: { type: String },
-  paidBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  createdAt: { type: Date, default: Date.now },
-});
+export interface IExpense extends Document {
+  trip: mongoose.Types.ObjectId;
+  amount: number;
+  title: string;
+  description?: string;
+  paidBy: string;  
+  createdAt: Date;
+  updatedAt: Date;
+}
 
-export default mongoose.model('Expense', expenseSchema);
+const ExpenseSchema = new Schema<IExpense>(
+  {
+    trip: { type: Schema.Types.ObjectId, ref: "Trip", required: true },
+    amount: { type: Number, required: true },
+    title: { type: String, required: true },
+    description: { type: String },
+    paidBy: { type: String, required: true }, // store string (username/guest)
+  },
+  { timestamps: true }
+);
+
+export default mongoose.model<IExpense>("Expense", ExpenseSchema);

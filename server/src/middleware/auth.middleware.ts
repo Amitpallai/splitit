@@ -1,27 +1,21 @@
-import { Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
-import { AuthRequest } from '../types/express';
+import { Request, Response, NextFunction } from "express";
+import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET || 'secret';
+export interface AuthRequest extends Request {
+  userId?: string;
+}
 
-const authMiddleware = (req: AuthRequest, res: Response, next: NextFunction) => {
+const JWT_SECRET = process.env.JWT_SECRET || "secret";
+
+export default function authMiddleware(req: AuthRequest, res: Response, next: NextFunction) {
   try {
-    const token = req.header('Authorization')?.replace('Bearer ', '') || req.cookies?.token;
+    const token = req.header("Authorization")?.replace("Bearer ", "") || req.cookies?.token;
+    if (!token) return res.status(401).json({ success: false, message: "Unauthorized" });
 
-    if (!token) {
-      return res.status(401).json({ success: false, message: 'No token, authorization denied' });
-    }
-
-    const decoded = jwt.verify(token, JWT_SECRET) as { userId: string };
-
-    req.userId = decoded.userId;
-    req.user = decoded;
-
+    const decoded: any = jwt.verify(token, JWT_SECRET);
+    req.userId = decoded.userId; // match your JWT payload key
     next();
-  } catch (error: any) {
-    console.error(error.message);
-    res.status(401).json({ success: false, message: 'Invalid token received' });
+  } catch (err) {
+    return res.status(401).json({ success: false, message: "Invalid token" });
   }
-};
-
-export default authMiddleware;
+}

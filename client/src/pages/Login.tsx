@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { toast, Toaster } from "sonner"; // ✅ Sonner
 
 const Login: React.FC = () => {
@@ -21,29 +21,28 @@ const Login: React.FC = () => {
 
     try {
       await login(email, password);
-
-      toast.success("Login successful! Welcome back."); // ✅ Sonner success toast
-      navigate("/dashboard"); // optional if login already redirects
+      toast.success("Login successful! 🎉");
+      navigate("/dashboard");
     } catch (err: any) {
-      toast.error(err.message || "Login failed"); // ✅ Sonner error toast
+      toast.error(err.message || "Login failed ❌");
     }
   };
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center bg-black text-white">
+    <div className="relative min-h-screen flex items-center justify-center bg-black text-white px-4">
       {/* Sonner Toaster */}
-      <Toaster position="top-right" />
+      <Toaster position="top-right" richColors />
 
       {/* Background planets */}
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute top-10 right-20 w-96 h-96 bg-purple-700 rounded-full blur-3xl opacity-40" />
-        <div className="absolute bottom-20 left-10 w-80 h-80 bg-purple-500 rounded-full blur-2xl opacity-30" />
+      <div className="absolute inset-0 -z-10 overflow-hidden">
+        <div className="absolute top-10 right-20 w-96 h-96 bg-purple-700 rounded-full blur-3xl opacity-40 animate-pulse" />
+        <div className="absolute bottom-20 left-10 w-80 h-80 bg-purple-500 rounded-full blur-2xl opacity-30 animate-pulse delay-200" />
       </div>
 
       {/* Card */}
       <div className="w-full max-w-md rounded-2xl bg-white/5 backdrop-blur-lg border border-white/10 p-8 shadow-lg">
-        <h2 className="text-2xl font-bold mb-2">Sign In</h2>
-        <p className="text-gray-400 text-sm mb-6">
+        <h2 className="text-3xl md:text-2xl font-bold mb-2 text-center">Sign In To SPLIT<span className="text-purple-500">it</span></h2>
+        <p className="text-gray-400 text-sm mb-6 text-center">
           Keep it all together and you’ll be fine
         </p>
 
@@ -88,6 +87,7 @@ const Login: React.FC = () => {
             </div>
           </div>
 
+          {/* Submit Button */}
           <Button
             type="submit"
             className="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium"
@@ -96,11 +96,12 @@ const Login: React.FC = () => {
           </Button>
         </form>
 
+        {/* Signup Redirect */}
         <p className="text-sm text-center text-gray-400 mt-6">
           New to SPLITit?{" "}
-          <a href="/signup" className="text-purple-400 hover:underline">
+          <Link to="/signup" className="text-purple-400 hover:underline">
             Create an account
-          </a>
+          </Link>
         </p>
       </div>
     </div>
