@@ -6,6 +6,7 @@ import { AuthProvider } from "./context/AuthContext";
 import { ThemeProvider } from "./components/theme-provider";
 import { TripProvider } from "./context/TripContext"; 
 import { ExpensesProvider } from "./context/ExpensesContext";
+import { CurrencyProvider } from "./context/CureencyContext";
 
 const rootElement = document.getElementById("root");
 if (!rootElement) throw new Error("Root element not found");
@@ -16,7 +17,9 @@ createRoot(rootElement).render(
       <AuthProvider>
         <TripProvider>  
           <ExpensesProvider>
-          <App />
+            <CurrencyProvider>
+              <App />
+            </CurrencyProvider>
           </ExpensesProvider>
         </TripProvider>
       </AuthProvider>

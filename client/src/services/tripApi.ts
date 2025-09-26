@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:5000/trips"; // Backend URL
+const BASE_URL = import.meta.env.VITE_API_BASE_URL + "/trips"; // Backend URL
 
 // Create axios instance
 const apiClient = axios.create({
@@ -23,6 +23,7 @@ export interface Trip {
   creator: { _id: string; username: string };
   participants: { _id: string; username: string }[];
   guestParticipants: string[];
+  members: string[]; // all participants + guestParticipants
   createdAt: string;
   updatedAt: string;
 }
@@ -68,4 +69,3 @@ export const tripApi = {
     return data;
   },
 };
-

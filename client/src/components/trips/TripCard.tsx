@@ -15,8 +15,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { MapPin, Pencil, Trash, Users } from "lucide-react";
 import { expenseApi } from "@/services/expenseApi";
 import { useExpenses } from "@/context/ExpensesContext";
-import type { Expense } from "@/services/expenseApi";
 import { useTrip } from "@/context/TripContext";
+import type { Expense } from "@/services/expenseApi";
+import { useCurrency } from "@/context/CureencyContext";
 
 interface TripCardProps {
   id: string;
@@ -55,9 +56,10 @@ export function TripCard({
   const allMembers = [...participants, ...guestParticipants];
   const { addExpense, editExpense, deleteExpense } = useExpenses();
   const { updateTrip, deleteTrip } = useTrip();
+  const { currency } = useCurrency(); // <-- use selected currency
 
   // -----------------------------
-  // Fetch expenses on mount AND when dialog opens
+  // Fetch expenses
   // -----------------------------
   const fetchTripExpenses = async () => {
     try {
@@ -68,19 +70,14 @@ export function TripCard({
     }
   };
 
-  // fetch immediately for dashboard
   useEffect(() => {
     fetchTripExpenses();
   }, []);
 
-  // fetch again if dialog opens to ensure latest
   useEffect(() => {
     if (open) fetchTripExpenses();
   }, [open]);
 
-  // -----------------------------
-  // Sync current expense fields when editing
-  // -----------------------------
   useEffect(() => {
     setTitle(currentExpense.title || "");
     setDescription(currentExpense.description || "");
@@ -89,7 +86,7 @@ export function TripCard({
   }, [currentExpense]);
 
   // -----------------------------
-  // Derived calculations for totals and balance
+  // Derived calculations
   // -----------------------------
   const totalExpensesValue = useMemo(() => {
     return tripExpenses.reduce((sum, exp) => sum + exp.amount, 0);
@@ -113,6 +110,16 @@ export function TripCard({
   const balanceValue = useMemo(() => {
     return (memberPayments[currentUser] ?? 0) - perPersonShare;
   }, [memberPayments, perPersonShare]);
+
+  // -----------------------------
+  // Format amounts with currency
+  // -----------------------------
+  const formatAmount = (value: number) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: currency,
+    }).format(value);
+  };
 
   // -----------------------------
   // Handlers
@@ -188,7 +195,7 @@ export function TripCard({
   };
 
   // -----------------------------
-  // Participants display component
+  // Participants display
   // -----------------------------
   const ParticipantsDisplay = () => {
     const [showAll, setShowAll] = useState(false);
@@ -202,11 +209,11 @@ export function TripCard({
           <span
             key={p}
             className={`px-2 py-1 rounded text-xs ${guestParticipants.includes(p)
-                ? "bg-gray-600 text-yellow-400"
-                : "bg-gray-700 text-white"
+              ? "bg-gray-600 text-yellow-400"
+              : "bg-gray-700 text-white"
               }`}
           >
-            {p} {guestParticipants.includes(p) && "(Guest)"}
+            {p}
           </span>
         ))}
         {allMembers.length > maxVisible && (
@@ -226,10 +233,24 @@ export function TripCard({
   // -----------------------------
   return (
     <>
-      {/* Main Trip Card */}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Card className="max-w-[400px] min-w-[280px] rounded-xl border border-gray-700 shadow-md text-black dark:text-white cursor-pointer hover:scale-[1.02] transition-transform">
+          <Card className="
+    flex-1 
+    min-w-[280px] 
+    max-w-[100%] 
+    sm:max-w-[320px] 
+    md:max-w-[400px] 
+    lg:max-w-[480px] 
+    xl:max-w-[600px] 
+    rounded-xl 
+    border border-gray-700 
+    shadow-md 
+    text-black dark:text-white 
+    cursor-pointer 
+    hover:scale-[1.02] 
+    transition-transform
+  ">
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg font-semibold capitalize">{name}</CardTitle>
@@ -276,24 +297,20 @@ export function TripCard({
                   className={`font-semibold ${balanceValue < 0 ? "text-red-500" : "text-green-500"
                     }`}
                 >
-                  {balanceValue < 0
-                    ? `-$${Math.abs(balanceValue).toFixed(2)}`
-                    : `$${balanceValue.toFixed(2)}`}
+                  {formatAmount(balanceValue)}
                 </span>
               </div>
 
               <div className="flex justify-between text-sm">
                 <span className="font-medium">Total expenses:</span>
-                <span className="font-semibold">${totalExpensesValue.toFixed(2)}</span>
+                <span className="font-semibold">{formatAmount(totalExpensesValue)}</span>
               </div>
 
-              {/* Participants */}
               <div className="flex flex-col mt-2">
-                <div className="flex items-center text-sm text-gray-400 mb-1">
+                <div className="flex items-center text-sm text-gray-400 mb-2">
                   <Users className="w-4 h-4 mr-2" />
                   <span>
-                    {allMembers.length} participant
-                    {allMembers.length !== 1 ? "s" : ""}
+                    {allMembers.length} participant{allMembers.length !== 1 ? "s" : ""}
                   </span>
                 </div>
                 <ParticipantsDisplay />
@@ -325,18 +342,16 @@ export function TripCard({
             ) : (
               tripExpenses.map((exp) => (
                 <Card key={exp._id}>
-                  <CardHeader className="flex justify-between">
-                    <CardTitle className="text-md capitalize">{exp.title}</CardTitle>
-                    <p className="text-sm">Amount: ${exp.amount.toFixed(2)}</p>
-                  </CardHeader>
-                  <CardContent className="flex justify-between items-center capitalize">
-                    <div>
-                      <p className="text-sm">Paid by: {exp.paidBy}</p>
+                  <CardContent className="grid grid-cols-3 capitalize scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900">
+                    <div className="flex flex-col items-start justify-start ">
+                      <p className="text-lg capitalize">{exp.title}</p>
+                      <p className="text-sm text-gray-400">Paid by: {exp.paidBy}</p>
                       {exp.description && (
-                        <p className="text-sm">Description: {exp.description}</p>
+                        <p className="text-sm text-gray-400">Description: {exp.description}</p>
                       )}
                     </div>
-                    <div className="flex space-x-2">
+                    <p className="text-sm text-green-500 flex items-center justify-center">{formatAmount(exp.amount)}</p>
+                    <div className="flex space-x-2 items-center justify-end">
                       <Button
                         variant="secondary"
                         onClick={() => {
@@ -401,7 +416,7 @@ export function TripCard({
                     <span>
                       {m}{" "}
                       {guestParticipants.includes(m) && (
-                        <span className="text-yellow-400">(Guest)</span>
+                        <span className="text-yellow-400"></span>
                       )}
                     </span>
                   </label>

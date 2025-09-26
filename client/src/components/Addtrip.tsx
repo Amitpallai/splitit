@@ -6,6 +6,7 @@ import { AddTripDialog } from "./trips/AddTripDialog";
 import { TripCard } from "./trips/TripCard";
 import { useTrip } from "@/context/TripContext";
 import PaymentsTable from "./trips/RecentTripExpense";
+import { MapPlus } from "lucide-react";
 
 export function AddTrip() {
   const { trips, fetchTrips } = useTrip();
@@ -47,7 +48,8 @@ export function AddTrip() {
             />
           ))
         ) : (
-          <p className="text-gray-500">
+          <p className="text-gray-500 text-center col-span-full">
+            <MapPlus className="mx-auto mb-2 text-dark dark:text-white"/>
             No trips found. Add a new trip to get started.
           </p>
         )}

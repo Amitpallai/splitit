@@ -27,7 +27,7 @@ export const TripProvider = ({ children }: { children: ReactNode }) => {
     setLoading(true);
     try {
       const res = await tripApi.getTrips();
-      if (res.success) setTrips(res.trips);
+      if (res.success) setTrips(res.trips ?? []); // ✅ fallback
     } catch (err) {
       console.error(err);
       toast.error("Failed to fetch trips");
@@ -40,7 +40,7 @@ export const TripProvider = ({ children }: { children: ReactNode }) => {
     setLoading(true);
     try {
       const res = await tripApi.getRecentTrips();
-      if (res.success) setTrips(res.trips);
+      if (res.success) setTrips(res.trips ?? []); // ✅ fallback
     } catch (err) {
       console.error(err);
       toast.error("Failed to fetch recent trips");
@@ -53,9 +53,9 @@ export const TripProvider = ({ children }: { children: ReactNode }) => {
     setLoading(true);
     try {
       const res = await tripApi.createTrip(trip);
-      if (res.success) {
-        setTrips(prev => [res.trip, ...prev]);
-        toast.success(res.message);
+      if (res.success && res.trip) {
+        setTrips(prev => [res.trip!, ...prev]); // ✅ add new trip at the start
+        toast.success(res.message ?? "Trip created successfully");
       }
     } catch (err) {
       console.error(err);
@@ -69,9 +69,9 @@ export const TripProvider = ({ children }: { children: ReactNode }) => {
     setLoading(true);
     try {
       const res = await tripApi.updateTrip(id, trip);
-      if (res.success) {
-        setTrips(prev => prev.map(t => (t._id === id ? res.trip : t)));
-        toast.success(res.message);
+      if (res.success && res.trip) {
+        setTrips(prev => prev.map(t => (t._id === id ? res.trip! : t))); // ✅ no undefined
+        toast.success(res.message ?? "Trip updated successfully");
       }
     } catch (err) {
       console.error(err);
@@ -87,7 +87,7 @@ export const TripProvider = ({ children }: { children: ReactNode }) => {
       const res = await tripApi.deleteTrip(id);
       if (res.success) {
         setTrips(prev => prev.filter(t => t._id !== id));
-        toast.success(res.message);
+        toast.success(res.message ?? "Trip deleted successfully");
       }
     } catch (err) {
       console.error(err);
@@ -102,7 +102,9 @@ export const TripProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   return (
-    <TripContext.Provider value={{ trips, loading, fetchTrips, fetchRecentTrips, addTrip, updateTrip, deleteTrip }}>
+    <TripContext.Provider
+      value={{ trips, loading, fetchTrips, fetchRecentTrips, addTrip, updateTrip, deleteTrip }}
+    >
       {children}
     </TripContext.Provider>
   );

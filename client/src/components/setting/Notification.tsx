@@ -18,7 +18,7 @@ export function NotificationDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-         <button className="w-full text-start flex gap-2 px-2 text-sm hover:bg-gray-100 py-1 rounded-md"><Bell className="w-4"/>Notification</button>
+         <button className="w-full text-start flex gap-2 px-2 text-sm hover:bg-gray-100 hover:bg-gray-100 dark:hover:bg-[#2B2B2B] py-1 rounded-md"><Bell className="w-4"/>Notification</button>
       </DialogTrigger>
 
       <DialogContent className="max-w-sm p-4">

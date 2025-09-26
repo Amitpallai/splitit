@@ -1,7 +1,8 @@
 import axios from "axios";
 import type { AuthResponse, User } from "../types/auth";
 
-const API_URL = "http://localhost:5000";
+// Use env variable for base URL
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const apiClient = axios.create({
   baseURL: API_URL,

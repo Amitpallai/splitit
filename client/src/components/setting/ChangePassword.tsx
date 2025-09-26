@@ -42,7 +42,7 @@ export function ChangePasswordDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild> 
-        <button className="w-full text-start flex gap-2 px-2 text-sm hover:bg-gray-100 py-1 rounded-md"><Lock className="w-4"/>Privacy</button>
+        <button className="w-full text-start flex gap-2 px-2 text-sm hover:bg-gray-100 hover:bg-gray-100 dark:hover:bg-[#2B2B2B] py-1 rounded-md"><Lock className="w-4"/>Privacy</button>
         
       </DialogTrigger>
 

@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:5000/expenses";
+// Use env variable for base URL
+const BASE_URL = import.meta.env.VITE_API_BASE_URL + "/expenses";
 
 // Create axios instance
 const apiClient = axios.create({
@@ -41,15 +42,18 @@ export const expenseApi = {
     const { data } = await apiClient.post("/", expense);
     return data;
   },
+
   getRecentExpenses: async (tripId?: string): Promise<Expense[]> => {
     const url = tripId ? `/?tripId=${tripId}` : "/recent";
     const { data } = await apiClient.get(url);
     return data;
   },
+
   editExpense: async (expenseId: string, expense: Partial<ExpensePayload>): Promise<Expense> => {
     const { data } = await apiClient.put(`/${expenseId}`, expense);
     return data;
   },
+
   deleteExpense: async (expenseId: string): Promise<{ success: boolean }> => {
     const { data } = await apiClient.delete(`/${expenseId}`);
     return data;
