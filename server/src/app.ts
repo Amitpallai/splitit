@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import cors from 'cors';
 import authRoutes from './routes/auth.routes';
 import userRoutes from './routes/user.routes';
@@ -15,6 +15,11 @@ app.use(cors({
   origin: config.frontendUrl, // ✅ use from config
   credentials: true,
 }));
+
+// ✅ Import Request & Response properly
+app.get("/", (req: Request, res: Response) => {
+  res.send("Welcome to the Splitit API!");
+});
 
 app.use(express.json());
 app.use(rateLimitMiddleware);
