@@ -18,6 +18,10 @@ app.use((0, cors_1.default)({
     origin: config_1.config.frontendUrl, // ✅ use from config
     credentials: true,
 }));
+// ✅ Import Request & Response properly
+app.get("/", (req, res) => {
+    res.send("Welcome to the Splitit API!");
+});
 app.use(express_1.default.json());
 app.use(rateLimit_middleware_1.default);
 app.use('/auth', auth_routes_1.default);
