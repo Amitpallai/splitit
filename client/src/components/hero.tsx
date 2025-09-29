@@ -10,7 +10,7 @@ const Hero = () => {
         className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl 
                    font-bold text-black dark:text-white"
       >
-        Welcome to SPLIT<span className="text-purple-500">it</span>
+        Welcome to SPLIT<span className="text-purple-600">it</span>
       </h1>
 
       <Link
